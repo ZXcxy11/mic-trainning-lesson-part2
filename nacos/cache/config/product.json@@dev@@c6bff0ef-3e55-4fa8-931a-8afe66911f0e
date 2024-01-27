@@ -1,0 +1,38 @@
+{
+  "redis": {
+    "host": "192.168.43.158",
+    "port": 6379
+  },
+  "consul": {
+    "host": "192.168.43.158",
+    "port": 8500
+  },
+  "product_srv": {
+    "srvName": "product_srv",
+    "host": "192.168.43.158",
+    "port": 9096,
+    "tags": [
+      "happy",
+      "product_srv"
+    ]
+  },
+  "product_web": {
+    "srvName": "product_web",
+    "host": "192.168.43.158",
+    "port": 8082,
+    "tags": [
+      "happy",
+      "product_web"
+    ]
+  },
+  "db": {
+    "host": "192.168.43.158",
+    "port": 3306,
+    "dbName": "happy_product_mic_tranning",
+    "userName": "root",
+    "password": "123456"
+  },
+    "jwt": {
+     "key": "12345678"
+  }
+}

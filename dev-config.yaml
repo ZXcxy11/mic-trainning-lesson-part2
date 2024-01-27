@@ -1,0 +1,43 @@
+host: '192.168.43.158'
+port: 8848
+namespace: 'c6bff0ef-3e55-4fa8-931a-8afe66911f0e'
+dataId: 'product.json'
+group:  'dev'
+timeoutMs:  5000
+notLoadCacheAtStart: true
+logDir: 'nacos/log'
+cacheDir: 'nacos/cache'
+logLevel: 'debug'
+
+
+
+#redis:
+#  host: '192.168.43.158'
+#  port: 6379
+#
+#consul:
+#  host: '192.168.43.158'
+#  port: 8500
+#
+#account_srv:
+#  srvName: "account_srv"
+#  host: '192.168.43.158'
+#  port: 9095
+#  tags:
+#    - happy
+#    - account_srv
+#
+#account_web:
+#  srvName: "account_web"
+#  host: '192.168.43.158'
+#  port: 8081
+#  tags:
+#    - happy
+#    - account_web
+#
+#db:
+#  host:  '127.0.0.1'
+#  port: '3307'
+#  dbName: 'happy_account_mic_traning'
+#  userName: 'root'
+#  password: 'root11'
