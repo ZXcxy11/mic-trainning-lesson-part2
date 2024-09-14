@@ -7,6 +7,7 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	"github.com/spf13/viper"
+	"log"
 )
 
 // todo 配置viper，用于读取配置文件(经过nacos改造)
@@ -15,7 +16,7 @@ var NacosConf NacosConfig
 
 // ViperConf用于存储从配置文件中读取的各个信息，并作为全局变量使用
 // var ViperConf ViperConfig
-var fileName = "./dev-config.yaml"
+var fileName = "dev-config.yaml"
 
 // Nacos的初始化
 func initNacos() {
@@ -23,12 +24,14 @@ func initNacos() {
 	v := viper.New()
 	//	设置配置文件路径
 	v.SetConfigFile(fileName)
+	log.Printf(fileName)
 	//	导入配置文件
-	v.ReadInConfig()
+	err2 := v.ReadInConfig()
+	log.Printf("Nacos Config: %+v\n", err2)
 	//	读取配置文件内容
-	v.Unmarshal(&NacosConf)
+	err2 = v.Unmarshal(&NacosConf)
+	log.Printf("Nacos Config: %+v\n", err2)
 	fmt.Println("nacos数据：", NacosConf)
-
 }
 
 // 从Nacos中获取数据

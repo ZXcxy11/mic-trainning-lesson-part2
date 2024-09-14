@@ -39,9 +39,9 @@ func InitDB() {
 	)
 	//	声明数据库连接信息
 	conn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		AppConf.DBConfig.UserName, AppConf.DBConfig.Password, "localhost",
+		AppConf.DBConfig.UserName, AppConf.DBConfig.Password, AppConf.DBConfig.Host,
 		AppConf.DBConfig.Port, AppConf.DBConfig.DBName)
-	zap.S().Infof(conn)
+	zap.S().Infoln("数据库连接信息:", conn)
 	//	连接数据库
 	DB, err = gorm.Open(mysql.Open(conn), &gorm.Config{
 		//	配置gorm选项
@@ -56,7 +56,7 @@ func InitDB() {
 	}
 	fmt.Println("Mysql初始化完成...")
 	//	根据结构体自动生成表
-	err = DB.AutoMigrate(&model.Category{}, &model.Brand{}, &model.Advertise{}, &model.Product{})
+	err = DB.AutoMigrate(&model.Category{}, &model.Brand{}, &model.Advertise{}, &model.Product{}, &model.ProductCategoryBrand{})
 	if err != nil {
 		fmt.Println("自动生成失败：" + err.Error())
 	}

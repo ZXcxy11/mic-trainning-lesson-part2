@@ -1,16 +1,16 @@
 {
   "redis": {
-    "host": "192.168.43.158",
+    "host": "192.168.150.11",
     "port": 6379
   },
   "consul": {
-    "host": "192.168.43.158",
+    "host": "192.168.150.11",
     "port": 8500
   },
   "product_srv": {
     "srvName": "product_srv",
-    "host": "192.168.43.158",
-    "port": 9096,
+    "host": "192.168.150.11",
+    "port": 50051,
     "tags": [
       "happy",
       "product_srv"
@@ -18,7 +18,7 @@
   },
   "product_web": {
     "srvName": "product_web",
-    "host": "192.168.43.158",
+    "host": "192.168.150.11",
     "port": 8082,
     "tags": [
       "happy",
@@ -26,8 +26,8 @@
     ]
   },
   "db": {
-    "host": "192.168.43.158",
-    "port": 3306,
+    "host": "192.168.150.11",
+    "port": 3308,
     "dbName": "happy_product_mic_tranning",
     "userName": "root",
     "password": "123456"

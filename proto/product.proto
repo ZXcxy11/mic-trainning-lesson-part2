@@ -37,7 +37,7 @@ service ProductService{
 
 //  品牌分类
   rpc CategoryBrandList(PagingReq) returns(CategoryBrandListRes);
-  rpc GetCategoryBrandList(CategoryItemReq) returns(BrandItemRes);
+  rpc GetCategoryBrandList(CategoryItemReq) returns(BrandRes);
   rpc CreateCategoryBrand(CategoryBrandReq) returns(CategoryBrandRes);
   rpc DeleteCategoryBrand(CategoryBrandReq) returns(google.protobuf.Empty);
   rpc UpdateCategoryBrand(CategoryBrandReq) returns(google.protobuf.Empty);
@@ -47,8 +47,8 @@ service ProductService{
 
 message CategoryBrandReq{
   int32 id=1;
-  BrandItemRes brand=2;
-  CategoryItemRes category=3;
+  int32 brandId=2;
+  int32 categoryId=3;
 }
 
 message CategoryBrandRes{
@@ -65,6 +65,7 @@ message CategoryBrandListRes{
 message PagingReq{
   int32 total=1;
   int32 pageSize=2;
+  int32 pageNo=3;
 }
 
 //  =======广告相关=======
@@ -178,6 +179,8 @@ message CreateProductItem{
   int32 brandId=15;
   int32 favNum=16;
   int32 soldNum=17;
+  int32 categoryId=18;
+  bool isShipFree=19;
 }
 
 message BatchProductIdReq{
@@ -204,7 +207,6 @@ message ProductItemRes{
   int32 CategoryId=2;
   string name=3;
   string sn=4;
-  int32 stocks=5;
   int32 soldNum=6;
   int32 favNum=7;
   float price=8;

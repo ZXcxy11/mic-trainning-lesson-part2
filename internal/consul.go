@@ -86,7 +86,7 @@ func FilterService() error {
 		return err
 	}
 	//	ServicesWithFilter() 获取特定服务名称的服务列表
-	serviceList, err := client.Agent().ServicesWithFilter("Service==account_web")
+	serviceList, err := client.Agent().ServicesWithFilter("Service==product_web")
 	if err != nil {
 		return err
 	}

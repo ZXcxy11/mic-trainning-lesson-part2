@@ -1,0 +1,99 @@
+version: "3.1"
+
+services:
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+#    端口映射：左为本地端口3308，右为docker里的端口3306，因此若想连接上，nacos配置的数据库配置需要与左边（本地3308）一致
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: happy_account_mic_traning.sql
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: 123456
+    volumes:
+      - ../goStu2/data:/var/lib/mysql
+      - ../goStu2/happy_account_mic_traning.sql:/docker-entrypoint-initdb.d/happy_account_mic_traning.sql
+  redis:
+    container_name: my-redis
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ../goStu2/redis-data/:/data
+  consul1:
+    image: consul:1.15.4
+    container_name: node1
+    command: agent -server -bootstrap-expect=3 -node=node1 -bind=0.0.0.0 -client=0.0.0.0 -datacenter=dc1
+#    volumes:
+#      - ../goStu2/consul1-data:/consul/data
+  consul2:
+    image: consul:1.15.4
+    container_name: node2
+    command: agent -server -retry-join=node1 -node=node2 -bind=0.0.0.0 -client=0.0.0.0 -datacenter=dc1
+    depends_on:
+      - consul1
+#    volumes:
+#      - ../goStu2/consul2-data:/consul/data
+  consul3:
+    image: consul:1.15.4
+    container_name: node3
+    command: agent -server -retry-join=node1 -node=node3 -bind=0.0.0.0 -client=0.0.0.0 -datacenter=dc1
+    depends_on:
+      - consul1
+#    volumes:
+#      - ../goStu2/consul3-data:/consul/data
+# 最后一个作为consul的ui界面
+  consul4:
+    image: consul:1.15.4
+    container_name: node4
+    command: agent -retry-join=node1 -node=node4 -bind=0.0.0.0 -client=0.0.0.0 -datacenter=dc1 -ui
+    ports:
+      - "8500:8500"
+    depends_on:
+      - consul2
+      - consul3
+#    volumes:
+#      - ../goStu2/consul4-data:/consul/data
+#  product_service:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "50051:50051"
+#      - "9091:9091"
+#    depends_on: #consul服务优先于srv服务开启
+#      - consul4
+#    networks:
+#      - my_network
+#    environment:
+#      - CONSUL_HTTP_ADDR=consul4:8500
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # 将本地 prometheus.yml 映射到容器内
+    ports:
+      - "9090:9090" # 映射 Prometheus 的端口
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml' # 指定配置文件路径
+    networks:
+      - my_network # 确保使用相同的网络
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # 设置管理员密码
+    volumes:
+      - grafana_data:/var/lib/grafana #存放grafana卷
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  grafana_data: {}
+

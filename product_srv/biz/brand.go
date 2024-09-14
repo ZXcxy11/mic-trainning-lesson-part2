@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"log"
 	"mic-trainning-lesson-part2/custom_error"
 	"mic-trainning-lesson-part2/internal"
 	"mic-trainning-lesson-part2/model"
@@ -20,7 +21,8 @@ func (p ProductServer) BrandList(ctx context.Context, req *pb.BrandPagingReq) (*
 
 	//	非分页的写法
 	//r := internal.DB.Find(&brandList)
-	//fmt.Println(r.RowsAffected)
+	//fmt.Println("r.RowsAffected:", r.RowsAffected)
+	//fmt.Println("====================")
 	//
 	//for _, item := range brandList {
 	//	brands = append(brands, ConvertBrandModel2Pb(item))
@@ -31,30 +33,28 @@ func (p ProductServer) BrandList(ctx context.Context, req *pb.BrandPagingReq) (*
 	//	分页
 	//	存放满足条件的记录总数
 	//var count int64
-	//	需要跳过第几页（分页偏移量）
+	////	需要跳过第几页（分页偏移量 页数-1 * 页大小）
 	//skip := (req.PageNo - 1) * req.PageSize
-	//r := internal.DB.Model(&model.Brand{}).Count(&count).Offset(int(skip)).Limit(int(req.PageSize)).Find(brandList)
+	////	Offset()函数：表示要跳过的查询结果，一般搭配Limit()函数用于分页查询（充当分页的页码）
+	////	Limit()函数：限制查询条数（充当分页时的页大小）
+	//r := internal.DB.Model(&model.Brand{}).Count(&count).Offset(int(skip)).Limit(int(req.PageSize)).Find(&brandList)
 	//if r.RowsAffected < 1 {
 	//	//TODO 可以进一步判断，根据业务需求
 	//}
+	//brandRes.Total = int32(count)
 	//for _, item := range brandList {
 	//	brands = append(brands, ConvertBrandModel2Pb(item))
 	//}
 	//brandRes.ItemList = brands
-	//brandRes.Total = int32(count)
 
-	//	分页2：通过自定义分页模板实现
-	var count int64
-	//paging := internal.MyPaging(int(req.PageNo), int(req.PageSize))
-	//r := paging(internal.DB).Find(&brandList)
-	r := internal.DB.Scopes(internal.MyPaging(int(req.PageNo), int(req.PageSize))).Count(&count).Find(&brandList)
-	if r.RowsAffected < 1 {
-		//TODO 可以进一步判断，根据业务需求
-	}
+	//	分页2：通过自定义分页模板实现：使用Scopes()函数，允许调用外部函数
+	_ = internal.DB.Scopes(internal.MyPaging(int(req.PageNo), int(req.PageSize))).Find(&brandList)
 	for _, item := range brandList {
 		brands = append(brands, ConvertBrandModel2Pb(item))
 	}
 	brandRes.ItemList = brands
+	var count int64
+	internal.DB.Model(&model.Brand{}).Count(&count)
 	brandRes.Total = int32(count)
 	return &brandRes, nil
 }
@@ -76,6 +76,7 @@ func (p ProductServer) DeleteBrand(ctx context.Context, req *pb.BrandItemReq) (*
 	if r.Error != nil {
 		return nil, errors.New(custom_error.DelBrandFail)
 	}
+	log.Print("删除成功")
 	//	声明一个空信息
 	return &emptypb.Empty{}, nil
 }

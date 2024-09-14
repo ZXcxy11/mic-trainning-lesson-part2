@@ -22,6 +22,7 @@ type Category struct {
 	ParentCategoryID int32
 	ParentCategory   *Category
 	SubCategory      []*Category `gorm:"foreignKey:ParentCategoryID;reference:ID"`
+	Level            int32
 }
 
 //	品牌
@@ -46,16 +47,16 @@ type Advertise struct {
 
 type Product struct {
 	BaseModel
-	CategoryID int32 `gorm:"type:int;not null"`
-	Category   Category
+	CategoryID int32    `gorm:"type:int;not null"`
+	Category   Category `gorm:"foreignKey:CategoryID"`
 
 	BrandID int32 `gorm:"type:int;not null"`
-	Brand   Brand
+	Brand   Brand `gorm:"foreignKey:BrandID"`
 
-	Selling  bool `gorm:"default:false"`
-	ShipFree bool `gorm:"default:false"`
-	IsPop    bool `gorm:"default:false"`
-	IsNew    bool `gorm:"default:false"`
+	Selling    bool `gorm:"default:false"`
+	IsShipFree bool `gorm:"default:false"`
+	IsPop      bool `gorm:"default:false"`
+	IsNew      bool `gorm:"default:false"`
 
 	Name       string  `gorm:"type:varchar(64);not null"`
 	SN         string  `gorm:"type:varchar(64);not null"`
@@ -64,17 +65,26 @@ type Product struct {
 	Price      float32 `gorm:"not null"`
 	RealPrice  float32 `gorm:"not null"`
 	ShortDesc  string  `gorm:"type:varchar(255);not null"`
-	Images     MyList  `gorm:"type:varchar(1024);not null"`
+	Images     MyList  `gorm:"type:varchar(1024);not null;"`
 	DescImages MyList  `gorm:"type:varchar(1024);not null"`
 	CoverImage string  `gorm:"type:varchar(255);not null"`
+}
+type ProductCategoryBrand struct {
+	BaseModel
+	CategoryID int32
+	BrandID    int32
+	Category   Category
+	Brand      Brand
 }
 
 type MyList []string
 
+// 将数组类型数据，转化为JSON数据存储在数据库中
 func (myList MyList) Value() (driver.Value, error) {
 	return json.Marshal(myList)
 }
 
-func (myList MyList) Scan(v interface{}) error {
+// 将存储在数据库中的JSON数据，转化回数组（所以使用模拟数据做测试时，模拟数据需要时JSON类型，varchar类型也能存放json类型数据）
+func (myList *MyList) Scan(v interface{}) error {
 	return json.Unmarshal(v.([]byte), myList)
 }
